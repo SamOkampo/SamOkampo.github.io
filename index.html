@@ -75,6 +75,7 @@
       overflow: hidden;
       border-radius: 1.5rem;
       background: #0d1b2a;
+      cursor: default;
     }
 
     .reveal-image {
@@ -131,6 +132,162 @@
       opacity: 0;
       visibility: hidden;
       pointer-events: none;
+    }
+
+    .reveal-hint {
+      position: absolute;
+      right: 1rem;
+      bottom: 1rem;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 999px;
+      background: rgba(13, 27, 42, 0.58);
+      color: rgba(255, 255, 255, 0.9);
+      padding: 0.65rem 1rem;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      opacity: 0;
+      transform: translateY(10px);
+      transition:
+        opacity 0.35s ease,
+        transform 0.35s ease;
+      pointer-events: none;
+    }
+
+    .reveal-card.is-revealed {
+      cursor: zoom-in;
+    }
+
+    .reveal-card.is-revealed .reveal-image {
+      cursor: zoom-in;
+    }
+
+    .reveal-card.is-revealed .reveal-hint {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .gallery-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 80;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+      background: rgba(8, 17, 27, 0.82);
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transition:
+        opacity 0.3s ease,
+        visibility 0.3s ease;
+    }
+
+    .gallery-modal.is-open {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+    }
+
+    .gallery-panel {
+      position: relative;
+      width: min(100%, 70rem);
+      transform: translateY(18px) scale(0.98);
+      transition: transform 0.3s ease;
+    }
+
+    .gallery-modal.is-open .gallery-panel {
+      transform: translateY(0) scale(1);
+    }
+
+    .gallery-surface {
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 1.8rem;
+      background: #08111b;
+      box-shadow: 0 30px 90px rgba(0, 0, 0, 0.35);
+    }
+
+    .gallery-image {
+      display: block;
+      max-height: min(78vh, 52rem);
+      width: 100%;
+      object-fit: contain;
+      background: #08111b;
+    }
+
+    .gallery-caption {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 1rem 1.25rem 1.15rem;
+      background: rgba(8, 17, 27, 0.96);
+      color: white;
+    }
+
+    .gallery-close,
+    .gallery-nav {
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.08);
+      color: white;
+      transition:
+        background 0.25s ease,
+        border-color 0.25s ease;
+    }
+
+    .gallery-close:hover,
+    .gallery-close:focus-visible,
+    .gallery-nav:hover,
+    .gallery-nav:focus-visible {
+      border-color: rgba(255, 255, 255, 0.22);
+      background: rgba(255, 255, 255, 0.14);
+      outline: none;
+    }
+
+    .gallery-close {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      z-index: 1;
+      height: 2.75rem;
+      width: 2.75rem;
+      font-size: 1.25rem;
+      line-height: 1;
+    }
+
+    .gallery-nav {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 2.75rem;
+      height: 2.75rem;
+      padding: 0 1rem;
+      font-size: 0.85rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .gallery-nav[disabled] {
+      opacity: 0.38;
+      cursor: not-allowed;
+    }
+
+    .gallery-locked {
+      overflow: hidden;
+    }
+
+    @media (max-width: 640px) {
+      .gallery-modal {
+        padding: 1rem;
+      }
+
+      .gallery-caption {
+        flex-direction: column;
+      }
     }
   </style>
 </head>
@@ -604,7 +761,7 @@
                 </div>
               </div>
 
-              <div class="reveal-card mt-6 js-reveal-card">
+              <div class="reveal-card mt-6 js-reveal-card" data-gallery-title="Old West Barbería" tabindex="0" role="button" aria-label="Revelar y ampliar imagen del proyecto Old West Barbería">
                 <img
                   src="old-west-corte-01.jpg"
                   alt="Ejemplo visual del proyecto Old West Barbería"
@@ -622,6 +779,7 @@
                     Haz clic para ver
                   </span>
                 </button>
+                <span class="reveal-hint">Haz clic otra vez para ampliar</span>
               </div>
 
               <div class="mt-6 grid gap-4 md:grid-cols-3">
@@ -701,7 +859,7 @@
                 </div>
               </div>
 
-              <div class="reveal-card mt-6 js-reveal-card">
+              <div class="reveal-card mt-6 js-reveal-card" data-gallery-title="Escala Margen" tabindex="0" role="button" aria-label="Revelar y ampliar imagen del proyecto Escala Margen">
                 <img
                   src="escalamargen-shot.png"
                   alt="Captura del proyecto Escala Margen"
@@ -719,6 +877,7 @@
                     Haz clic para ver
                   </span>
                 </button>
+                <span class="reveal-hint">Haz clic otra vez para ampliar</span>
               </div>
 
               <div class="mt-6 grid gap-4 md:grid-cols-3">
@@ -876,20 +1035,172 @@
     </div>
   </footer>
 
+  <div
+    id="galleryModal"
+    class="gallery-modal"
+    aria-hidden="true"
+  >
+    <div class="gallery-panel">
+      <button
+        type="button"
+        id="galleryClose"
+        class="gallery-close"
+        aria-label="Cerrar galería"
+      >
+        ×
+      </button>
+
+      <div class="gallery-surface">
+        <img
+          id="galleryImage"
+          src=""
+          alt=""
+          class="gallery-image"
+        >
+
+        <div class="gallery-caption">
+          <div>
+            <p id="galleryTitle" class="text-sm font-semibold uppercase tracking-[0.22em] text-white/55"></p>
+            <p id="galleryDescription" class="mt-2 text-sm leading-7 text-white/80"></p>
+          </div>
+
+          <div class="flex items-center gap-3">
+            <button type="button" id="galleryPrev" class="gallery-nav" aria-label="Imagen anterior">
+              Anterior
+            </button>
+            <button type="button" id="galleryNext" class="gallery-nav" aria-label="Imagen siguiente">
+              Siguiente
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script>
     document.getElementById("year").textContent = new Date().getFullYear();
 
-    document.querySelectorAll(".js-reveal-card").forEach(function(card) {
+    var galleryItems = Array.from(document.querySelectorAll(".js-reveal-card"));
+    var galleryModal = document.getElementById("galleryModal");
+    var galleryImage = document.getElementById("galleryImage");
+    var galleryTitle = document.getElementById("galleryTitle");
+    var galleryDescription = document.getElementById("galleryDescription");
+    var galleryPrev = document.getElementById("galleryPrev");
+    var galleryNext = document.getElementById("galleryNext");
+    var galleryClose = document.getElementById("galleryClose");
+    var currentGalleryIndex = -1;
+    var lastFocusedCard = null;
+
+    function renderGallery(index) {
+      var card = galleryItems[index];
+      var image = card.querySelector(".reveal-image");
+
+      if (!card || !image) {
+        return;
+      }
+
+      currentGalleryIndex = index;
+      galleryImage.src = image.getAttribute("src");
+      galleryImage.alt = image.getAttribute("alt");
+      galleryTitle.textContent = card.dataset.galleryTitle || "Proyecto";
+      galleryDescription.textContent = image.getAttribute("alt");
+      galleryPrev.disabled = index === 0;
+      galleryNext.disabled = index === galleryItems.length - 1;
+    }
+
+    function openGallery(index) {
+      renderGallery(index);
+      lastFocusedCard = galleryItems[index];
+      galleryModal.classList.add("is-open");
+      galleryModal.setAttribute("aria-hidden", "false");
+      document.body.classList.add("gallery-locked");
+      galleryClose.focus();
+    }
+
+    function closeGallery() {
+      galleryModal.classList.remove("is-open");
+      galleryModal.setAttribute("aria-hidden", "true");
+      document.body.classList.remove("gallery-locked");
+
+      if (lastFocusedCard) {
+        lastFocusedCard.focus();
+      }
+    }
+
+    function stepGallery(direction) {
+      var nextIndex = currentGalleryIndex + direction;
+
+      if (nextIndex < 0 || nextIndex >= galleryItems.length) {
+        return;
+      }
+
+      renderGallery(nextIndex);
+    }
+
+    galleryItems.forEach(function(card, index) {
       var trigger = card.querySelector(".js-reveal-trigger");
 
       if (!trigger) {
         return;
       }
 
-      trigger.addEventListener("click", function() {
+      trigger.addEventListener("click", function(event) {
+        event.stopPropagation();
         card.classList.add("is-revealed");
         trigger.setAttribute("aria-expanded", "true");
       });
+
+      card.addEventListener("click", function() {
+        if (!card.classList.contains("is-revealed")) {
+          return;
+        }
+
+        openGallery(index);
+      });
+
+      card.addEventListener("keydown", function(event) {
+        if (event.key !== "Enter" && event.key !== " ") {
+          return;
+        }
+
+        event.preventDefault();
+
+        if (!card.classList.contains("is-revealed")) {
+          card.classList.add("is-revealed");
+          trigger.setAttribute("aria-expanded", "true");
+          return;
+        }
+
+        openGallery(index);
+      });
+    });
+
+    galleryClose.addEventListener("click", closeGallery);
+    galleryPrev.addEventListener("click", function() { stepGallery(-1); });
+    galleryNext.addEventListener("click", function() { stepGallery(1); });
+
+    galleryModal.addEventListener("click", function(event) {
+      if (event.target === galleryModal) {
+        closeGallery();
+      }
+    });
+
+    document.addEventListener("keydown", function(event) {
+      if (!galleryModal.classList.contains("is-open")) {
+        return;
+      }
+
+      if (event.key === "Escape") {
+        closeGallery();
+      }
+
+      if (event.key === "ArrowLeft") {
+        stepGallery(-1);
+      }
+
+      if (event.key === "ArrowRight") {
+        stepGallery(1);
+      }
     });
   </script>
 </body>
